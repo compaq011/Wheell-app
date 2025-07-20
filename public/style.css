@@ -83,3 +83,20 @@ button#openButton:hover {
   width: 300px;
   border-radius: 8px;
 }
+.winner-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.winner-modal img {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 12px;
+  border: 3px solid white;
+  box-shadow: 0 0 20px white;
+}
