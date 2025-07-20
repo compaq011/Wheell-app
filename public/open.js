@@ -7,10 +7,10 @@ const items = [
   "images/Recoil.jpg",
   "images/Revolution.jpg",
   "images/Glock18-vogue.jpg",
-  "images/Gallery.jpg",
-  "images/Kilowatt.jpg",
+  "images/gallery.jpg",
+  "images/kilowatt.jpg",
   "images/Chroma2.jpg",
-  "images/TickettoHell.jpg"
+  "images/tickettoHell.jpg"
 ];
 
 function populateItems() {
