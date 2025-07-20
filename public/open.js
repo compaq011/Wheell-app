@@ -59,14 +59,3 @@ function spin() {
 }
 
 openButton.addEventListener("click", spin);
-
-const items = [
-  { src: "images/Recoil.jpg", chance: 60 },
-  { src: "images/Fracture.jpg", chance: 27 },
-  { src: "images/Revolution.jpg", chance: 0.05 },
-  { src: "images/kilowatt.jpg", chance: 4 },
-  { src: "images/tickettoHell.jpg", chance: 3 },
-  { src: "images/gallery.jpg", chance: 0.05 },
-  { src: "images/Chroma2.jpg", chance: 0 },
-  { src: "images/Glock18-vogue.jpg", chance: 0 }
-];
