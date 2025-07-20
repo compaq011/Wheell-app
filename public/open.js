@@ -5,14 +5,14 @@ aqdocument.addEventListener("DOMContentLoaded", () => {
   const modalImg = modal.querySelector("img");
 
   const items = [
-    { name: "Recoil", img: "images/Recoil.jpg", chance: 60 },
-    { name: "Fracture", img: "images/Fracture.jpg", chance: 27 },
-    { name: "Revolution", img: "images/Revolution.jpg", chance: 0.05 },
-    { name: "kilowatt", img: "images/kilowatt.jpg", chance: 4 },
-    { name: "tickettohell", img: "images/tickettohell.jpg", chance: 3 },
-    { name: "gallery", img: "images/gallery.jpg", chance: 0.05 },
-    { name: "Chroma2", img: "images/Chroma2.jpg", chance: 0 },
-    { name: "Glock18-vogue", img: "images/Glock18-vogue.jpg", chance: 0 },
+    { name: "Recoil.jpg", img: "images/Recoil.jpg", chance: 60 },
+    { name: "Fracture.jpg", img: "images/Fracture.jpg", chance: 27 },
+    { name: "Revolution.jpg", img: "images/Revolution.jpg", chance: 0.05 },
+    { name: "kilowatt.jpg", img: "images/kilowatt.jpg", chance: 4 },
+    { name: "tickettohell.jpg", img: "images/tickettohell.jpg", chance: 3 },
+    { name: "gallery.jpg", img: "images/gallery.jpg", chance: 0.05 },
+    { name: "Chroma2.jpg", img: "images/Chroma2.jpg", chance: 0 },
+    { name: "Glock18-vogue.jpg", img: "images/Glock18-vogue.jpg", chance: 0 },
   ];
 
   const audio = new Audio("sounds/open.mp3");
