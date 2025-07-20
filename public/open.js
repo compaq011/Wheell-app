@@ -48,8 +48,8 @@ function spin() {
 
   // Scroll işlemi
   const itemWidth = 110;
-  const totalShift = itemWidth * 25; // 25 item sola kayacak (kazanan ortada olacak)
-  scrollArea.style.transition = "transform 6s cubic-bezier(0.1, 0.8, 0.2, 1)";
+  const totalShift = itemWidth * 35; // 25 item sola kayacak (kazanan ortada olacak)
+  scrollArea.style.transition = "transform 10s cubic-bezier(0.1, 0.8, 0.2, 1)";
   scrollArea.style.transform = `translateX(-${totalShift}px)`;
 
   setTimeout(() => {
