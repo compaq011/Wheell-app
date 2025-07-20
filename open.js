@@ -1,6 +1,6 @@
 const scrollArea = document.getElementById("scrollArea"); const openButton = document.getElementById("openButton"); const rollSound = document.getElementById("rollSound");
 
-// Kasadaki itemlar ve görselleri const items = [ "images/fracture.jpg", "images/recoil.jpg", "images/revolution.jpg", "images/glock18-vogue.jpg", "images/gallery.jpg", "images/kilowatt.jpg", "images/chroma2.jpg", "images/tickettohell.jpg" ];
+// Kasadaki itemlar ve görselleri const items = [ "images/Fracture.jpg", "images/Recoil.jpg", "images/Revolution.jpg", "images/Glock18-Vogue.jpg", "images/Gallery.jpg", "images/Kilowatt.jpg", "images/Chroma2.jpg", "images/TicketToHell.jpg" ];
 
 // Scroll alanını doldur function populateItems() { for (let i = 0; i < 40; i++) { const img = document.createElement("img"); img.src = items[Math.floor(Math.random() * items.length)]; scrollArea.appendChild(img); } }
 
