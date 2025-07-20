@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // RAM tabanlı token listesi
-global.tokens = ['abc123', 'xyz789' , 'ykt' , 'ssd', 'ismail'];
+global.tokens = ['abc123', 'xyz789' , 'ykt' , 'ssd', 'ismail' , 'ssk'];
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
