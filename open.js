@@ -1,6 +1,6 @@
 const scrollArea = document.getElementById("scrollArea");
 const openButton = document.getElementById("openButton");
-const rollSound = document.getElementById("rollSound");
+//const rollSound = document.getElementById("rollSound");
 
 const items = [
   "images/Fracture.jpg",
@@ -27,8 +27,8 @@ populateItems();
 
 function spin() {
   openButton.disabled = true;
-  rollSound.currentTime = 0;
-  rollSound.play();
+ // rollSound.currentTime = 0;
+//  rollSound.play();
 
   const itemWidth = 120;
   const stopAt = -(itemWidth * (Math.floor(Math.random() * 10) + 20));
@@ -36,9 +36,9 @@ function spin() {
   scrollArea.style.transition = "transform 5s ease-out";
   scrollArea.style.transform = `translateX(${stopAt}px)`;
 
-  setTimeout(() => {
-    rollSound.pause();
-    rollSound.currentTime = 0;
+ setTimeout(() => {
+   // rollSound.pause();
+   // rollSound.currentTime = 0;
 
     const index = Math.floor(Math.abs(stopAt) / itemWidth) + 3;
     const selectedImg = scrollArea.children[index];
