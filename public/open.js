@@ -39,7 +39,7 @@ function spin() {
   const stopPosition = -(winningIndex * itemWidth);
 
   // Hızlı başlayıp yavaşlayan animasyon
-  scrollArea.style.transition = "transform 5s ease-out";
+  scrollArea.style.transition = "transform 12s ease-out";
   scrollArea.style.transform = `translateX(${stopPosition}px)`;
 
   setTimeout(() => {
