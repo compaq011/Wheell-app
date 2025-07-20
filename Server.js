@@ -1,51 +1,30 @@
-const express = require('express');
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// GEÇİCİ TOKEN VERİTABANI (Bellekte tutulur)
-let tokens = {
-  "abc124": false,
-  "winner456": false,
-  "test999": false
-};
+const tokens = JSON.parse(fs.readFileSync("tokens.json", "utf8"));
 
-// ÖDÜLLER
-const rewards = [
-  "Fracture case",
-  "Recoil case",
-  "Revolution case",
-  "Glock-18 vogue ft",
-  "Gallery case",
-  "Kilowatt case",
-  "Chroma 2 case",
-  "Ticket to hell mw"
-];
+app.use(express.static(path.join(__dirname, "public")));
 
-// /spin endpoint
-app.get('/spin', (req, res) => {
+app.get("/", (req, res) => {
   const token = req.query.token;
-
-  // Token yoksa veya bilinmiyorsa
-  if (!token || !(token in tokens)) {
-    return res.status(400).send("❌ Bağlantı geçersiz veya token tanınmıyor.");
+  if (!token || !tokens[token]) {
+    return res.status(403).send("Token geçersiz veya bağlantı süresi doldu.");
   }
 
-  // Token daha önce kullanıldıysa
-  if (tokens[token]) {
-    return res.status(403).send("⚠️ Bu token zaten kullanıldı.");
+  if (tokens[token] === true) {
+    return res.status(403).send("Token zaten kullanıldı.");
   }
 
-  // Ödül seç
-  const prize = rewards[Math.floor(Math.random() * rewards.length)];
-
-  // Token'ı kullanılmış işaretle
   tokens[token] = true;
+  fs.writeFileSync("tokens.json", JSON.stringify(tokens, null, 2));
 
-  // Cevap dön
-  res.send(`🎉 Tebrikler! Kazandığın ödül: ${prize}`);
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Sunucuyu başlat
 app.listen(PORT, () => {
-  console.log(`🚀 Sunucu çalışıyor: http://localhost:${PORT}`);
+  console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
 });
