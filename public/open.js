@@ -1,9 +1,9 @@
 const scrollArea = document.getElementById("scrollArea");
 const openButton = document.getElementById("openButton");
+
 const winnerModal = document.getElementById("winnerModal");
 const winnerImage = document.getElementById("winnerImage");
 
-// Görseller
 const items = [
   "images/Fracture.jpg",
   "images/Recoil.jpg",
@@ -12,11 +12,11 @@ const items = [
   "images/Gallery.jpg",
   "images/Kilowatt.jpg",
   "images/Chroma2.jpg",
-  "images/TickettoHell.jpg"
+  "images/TicketToHell.jpg"
 ];
 
-// Scroll alanına item görsellerini yükle
 function populateItems() {
+  scrollArea.innerHTML = "";
   for (let i = 0; i < 40; i++) {
     const img = document.createElement("img");
     img.src = items[Math.floor(Math.random() * items.length)];
@@ -24,33 +24,38 @@ function populateItems() {
   }
 }
 
-// Aç butonuna basınca spin başlat
+populateItems();
+
 function spin() {
   openButton.disabled = true;
-  scrollArea.style.transition = "transform 5s ease-out";
 
-  const itemWidth = 120;
-  const stopAt = -(itemWidth * (Math.floor(Math.random() * 10) + 20));
+  // Görselleri yeniden oluştur
+  populateItems();
+
+  const itemWidth = 110; // image width + margin
+  const totalItems = scrollArea.children.length;
+
+  // Rastgele kazanan index (20 ila 24 arasında olacak)
+  const winningIndex = 20 + Math.floor(Math.random() * 5);
+
+  const stopAt = -(winningIndex * itemWidth) + (scrollArea.parentElement.clientWidth / 2) - (itemWidth / 2);
+  scrollArea.style.transition = "transform 5s ease-out";
   scrollArea.style.transform = `translateX(${stopAt}px)`;
 
+  // Kazananı 5 saniye sonra göster
   setTimeout(() => {
-    const centerIndex = Math.floor(Math.abs(stopAt) / itemWidth) + 2;
-    const selectedImg = scrollArea.children[centerIndex];
-    const winnerSrc = selectedImg ? selectedImg.src : "";
-
-    // Kazananı modalda göster
-    winnerImage.src = winnerSrc;
+    const winner = scrollArea.children[winningIndex];
+    winnerImage.src = winner.src;
     winnerModal.style.display = "flex";
 
-    // Tekrar butonu aktif et (istersen kapalı da bırakabilirsin)
     openButton.disabled = false;
-  }, 5000);
+  }, 5200);
 }
 
-// Modal tıklanınca kapansın
+// Kasa açma butonu
+openButton.addEventListener("click", spin);
+
+// Modal kapatma
 winnerModal.addEventListener("click", () => {
   winnerModal.style.display = "none";
 });
-
-populateItems();
-openButton.addEventListener("click", spin);
