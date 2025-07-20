@@ -12,12 +12,14 @@ const items = [
   "images/Gallery.jpg",
   "images/Kilowatt.jpg",
   "images/Chroma2.jpg",
-  "images/TicketToHell.jpg"
+  "images/TickettoHell.jpg"
 ];
+
+const itemWidth = 110; // image + margin
 
 function populateItems() {
   scrollArea.innerHTML = "";
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 50; i++) {
     const img = document.createElement("img");
     img.src = items[Math.floor(Math.random() * items.length)];
     scrollArea.appendChild(img);
@@ -28,34 +30,38 @@ populateItems();
 
 function spin() {
   openButton.disabled = true;
+  populateItems(); // görselleri yenile
 
-  // Görselleri yeniden oluştur
-  populateItems();
-
-  const itemWidth = 110; // image width + margin
   const totalItems = scrollArea.children.length;
+  const center = scrollArea.parentElement.clientWidth / 2;
 
-  // Rastgele kazanan index (20 ila 24 arasında olacak)
-  const winningIndex = 20 + Math.floor(Math.random() * 5);
+  const winningIndex = 20 + Math.floor(Math.random() * 10);
+  const targetPosition = -(winningIndex * itemWidth) + center - (itemWidth / 2);
 
-  const stopAt = -(winningIndex * itemWidth) + (scrollArea.parentElement.clientWidth / 2) - (itemWidth / 2);
-  scrollArea.style.transition = "transform 5s ease-out";
-  scrollArea.style.transform = `translateX(${stopAt}px)`;
+  let currentX = 0;
+  let speed = 80; // ilk hız
+  let deceleration = 0.95; // yavaşlama katsayısı
 
-  // Kazananı 5 saniye sonra göster
-  setTimeout(() => {
-    const winner = scrollArea.children[winningIndex];
-    winnerImage.src = winner.src;
-    winnerModal.style.display = "flex";
+  const interval = setInterval(() => {
+    speed *= deceleration;
+    currentX -= speed;
 
-    openButton.disabled = false;
-  }, 5200);
+    if (currentX <= targetPosition) {
+      clearInterval(interval);
+      scrollArea.style.transform = `translateX(${targetPosition}px)`;
+
+      const winner = scrollArea.children[winningIndex];
+      winnerImage.src = winner.src;
+      winnerModal.style.display = "flex";
+      openButton.disabled = false;
+    } else {
+      scrollArea.style.transform = `translateX(${currentX}px)`;
+    }
+  }, 16); // ~60 FPS
 }
 
-// Kasa açma butonu
 openButton.addEventListener("click", spin);
 
-// Modal kapatma
 winnerModal.addEventListener("click", () => {
   winnerModal.style.display = "none";
 });
