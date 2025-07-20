@@ -1,18 +1,18 @@
-document.addEventListener("DOMContentLoaded", () => {
+aqdocument.addEventListener("DOMContentLoaded", () => {
   const openButton = document.getElementById("openButton");
   const scrollArea = document.querySelector(".scroll-area");
   const modal = document.querySelector(".winner-modal");
   const modalImg = modal.querySelector("img");
 
   const items = [
-    { name: "Recoil", img: "images/recoil.jpg", chance: 60 },
-    { name: "Feacture", img: "images/fracture.jpg", chance: 27 },
-    { name: "Revolution", img: "images/revolution.jpg", chance: 0.05 },
+    { name: "Recoil", img: "images/Recoil.jpg", chance: 60 },
+    { name: "Fracture", img: "images/Fracture.jpg", chance: 27 },
+    { name: "Revolution", img: "images/Revolution.jpg", chance: 0.05 },
     { name: "kilowatt", img: "images/kilowatt.jpg", chance: 4 },
     { name: "tickettohell", img: "images/tickettohell.jpg", chance: 3 },
     { name: "gallery", img: "images/gallery.jpg", chance: 0.05 },
-    { name: "Chroma2", img: "images/chroma2.jpg", chance: 0 },
-    { name: "Glock18-vogue", img: "images/vogue.jpg", chance: 0 },
+    { name: "Chroma2", img: "images/Chroma2.jpg", chance: 0 },
+    { name: "Glock18-vogue", img: "images/Glock18-vogue.jpg", chance: 0 },
   ];
 
   const audio = new Audio("sounds/open.mp3");
