@@ -1,7 +1,6 @@
 const scrollArea = document.getElementById("scrollArea");
 const openButton = document.getElementById("openButton");
-const winnerModal = document.getElementById("winnerModal");
-const winnerImage = document.getElementById("winnerImage");
+const rollSound = document.getElementById("rollSound");
 
 const items = [
   "images/Fracture.jpg",
@@ -11,10 +10,9 @@ const items = [
   "images/Gallery.jpg",
   "images/Kilowatt.jpg",
   "images/Chroma2.jpg",
-  "images/TickettoHell.jpg"
+  "images/TicketToHell.jpg"
 ];
 
-// Scroll alanına rastgele itemleri yerleştir
 function populateItems() {
   scrollArea.innerHTML = "";
   for (let i = 0; i < 60; i++) {
@@ -29,32 +27,35 @@ populateItems();
 
 function spin() {
   openButton.disabled = true;
+  rollSound.currentTime = 0;
+  rollSound.play();
 
-  // Scroll alanı genişliği
-  const itemWidth = 110; // CSS'e uygun
-  const totalItems = scrollArea.children.length;
+  const itemWidth = 110; // Görsele göre ayarla
+  const stopIndex = Math.floor(Math.random() * 10) + 25; // 25-35 arası
+  const stopAt = -(itemWidth * stopIndex);
 
-  // Kazanan item pointer’ın altına gelsin (20. index civarı)
-  const winningIndex = 20 + Math.floor(Math.random() * 10);
-  const stopPosition = -(winningIndex * itemWidth);
-
-  // Hızlı başlayıp yavaşlayan animasyon
-  scrollArea.style.transition = "transform 12s ease-out";
-  scrollArea.style.transform = `translateX(${stopPosition}px)`;
+  scrollArea.style.transition = "transform 6s cubic-bezier(0.1, 0.8, 0.3, 1)";
+  scrollArea.style.transform = `translateX(${stopAt}px)`;
 
   setTimeout(() => {
-    // Kazanan item'i belirle
-    const selectedImg = scrollArea.children[winningIndex];
-    const imgSrc = selectedImg.src;
+    rollSound.pause();
+    rollSound.currentTime = 0;
 
-    // Modal göster
-    winnerImage.src = imgSrc;
+    const selectedImg = scrollArea.children[stopIndex];
+    const winnerModal = document.getElementById("winnerModal");
+    const winnerImage = document.getElementById("winnerImage");
+
+    winnerImage.src = selectedImg.src;
     winnerModal.style.display = "flex";
 
-    // Tekrar oynatmak istersen modal'ı kapat
-    openButton.disabled = false;
-  }, 5200); // Animasyon süresiyle uyumlu olmalı
+    setTimeout(() => {
+      winnerModal.style.display = "none";
+      openButton.disabled = false;
+      populateItems(); // yeni görseller
+      scrollArea.style.transition = "none";
+      scrollArea.style.transform = "translateX(0)";
+    }, 3000);
+  }, 6000);
 }
 
-// Butona tıklandığında çalıştır
 openButton.addEventListener("click", spin);
