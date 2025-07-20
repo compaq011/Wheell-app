@@ -1,13 +1,11 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Case Opening</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
- <div id="winnerModal" class="winner-modal">
-  <img id="winnerImage" src="" alt="Kazanan" />
-</div> 
 <body>
   <div class="case-container">
     <div class="scroll-area" id="scrollArea">
@@ -15,7 +13,14 @@
     </div>
     <div class="pointer"></div>
   </div>
+
   <button id="openButton">Kasayı Aç</button>
+
+  <!-- Kazanan item modalı -->
+  <div id="winnerModal" class="winner-modal">
+    <img id="winnerImage" src="" alt="Kazanan" />
+  </div>
+
   <script src="open.js"></script>
 </body>
 </html>
