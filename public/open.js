@@ -1,117 +1,61 @@
-aqdocument.addEventListener("DOMContentLoaded", () => {
-  const openButton = document.getElementById("openButton");
-  const scrollArea = document.querySelector(".scroll-area");
-  const modal = document.querySelector(".winner-modal");
-  const modalImg = modal.querySelector("img");
+const items = [
+  { name: 'Recoil', src: '/public/images/Recoil.jpg', chance: 60 },
+  { name: 'Fracture', src: '/public/images/Fracture.jpg', chance: 27 },
+  { name: 'tickettohell', src: '/public/images/tickettohell.jpg', chance: 3 },
+  { name: 'kilowatt', src: '/public/images/kilowatt.jpg', chance: 4 },
+  { name: 'gallery', src: '/public/images/gallery.jpg', chance: 0.05 },
+  { name: 'Revolution', src: '/public/images/Revolution.jpg', chance: 0.05 },
+  { name: 'Chroma2', src: '/public/images/Chroma2.jpg', chance: 0 },
+  { name: 'Glock18-vogue', src: '/public/images/Glock18-vogue.jpg', chance: 0 }
+];
 
-  const items = [
-    { name: "Recoil.jpg", img: "images/Recoil.jpg", chance: 60 },
-    { name: "Fracture.jpg", img: "images/Fracture.jpg", chance: 27 },
-    { name: "Revolution.jpg", img: "images/Revolution.jpg", chance: 0.05 },
-    { name: "kilowatt.jpg", img: "images/kilowatt.jpg", chance: 4 },
-    { name: "tickettohell.jpg", img: "images/tickettohell.jpg", chance: 3 },
-    { name: "gallery.jpg", img: "images/gallery.jpg", chance: 0.05 },
-    { name: "Chroma2.jpg", img: "images/Chroma2.jpg", chance: 0 },
-    { name: "Glock18-vogue.jpg", img: "images/Glock18-vogue.jpg", chance: 0 },
-  ];
-
-  const audio = new Audio("sounds/open.mp3");
-
-  let allImagesLoaded = false;
-
-  function preloadImages(images, callback) {
-    let loaded = 0;
-    images.forEach(item => {
-      const img = new Image();
-      img.src = item.img;
-      img.onload = () => {
-        loaded++;
-        if (loaded === images.length) {
-          callback();
-        }
-      };
-      img.onerror = () => {
-        console.error("Resim yüklenemedi:", item.img);
-        loaded++;
-        if (loaded === images.length) {
-          callback();
-        }
-      };
-    });
+function pickWinner() {
+  const total = items.reduce((sum, item) => sum + item.chance, 0);
+  const rand = Math.random() * total;
+  let cumulative = 0;
+  for (const item of items) {
+    cumulative += item.chance;
+    if (rand < cumulative) return item;
   }
+  return items[0];
+}
 
-  function pickWinner() {
-    const rand = Math.random() * 100;
-    let sum = 0;
-    for (let i = 0; i < items.length; i++) {
-      sum += items[i].chance;
-      if (rand <= sum) {
-        return items[i];
-      }
-    }
-    return items[0]; // fallback
+document.getElementById('openButton').addEventListener('click', () => {
+  const scrollArea = document.getElementById('scrollArea');
+  const winnerModal = document.getElementById('winnerModal');
+  const winnerImage = document.getElementById('winnerImage');
+  const audio = document.getElementById('openSound');
+
+  scrollArea.innerHTML = '';
+  winnerModal.style.display = 'none';
+
+  const winner = pickWinner();
+  const fullList = [];
+
+  for (let i = 0; i < 30; i++) {
+    const item = items[Math.floor(Math.random() * items.length)];
+    fullList.push(item);
   }
+  fullList.push(winner);
 
-  function createScrollItems(targetItem) {
-    const fullList = [];
-    const scrollCount = 50; // toplam dönme item sayısı
-    for (let i = 0; i < scrollCount - 1; i++) {
-      const randomItem = items[Math.floor(Math.random() * items.length)];
-      fullList.push(randomItem);
-    }
-    fullList.push(targetItem);
-    return fullList;
-  }
-
-  function startScrollAnimation(itemList, targetItem) {
-    scrollArea.innerHTML = "";
-    itemList.forEach(item => {
-      const img = document.createElement("img");
-      img.src = item.img;
-      img.className = "item-img";
-      scrollArea.appendChild(img);
-    });
-
-    const totalItems = itemList.length;
-    const itemWidth = 104; // 100px + 2x margin (2px+2px)
-    const scrollDistance = itemWidth * totalItems - (itemWidth * 2);
-
-    scrollArea.style.transition = "transform 6s cubic-bezier(0.1, 0.9, 0.3, 1)";
-    scrollArea.style.transform = `translateX(-${scrollDistance}px)`;
-
-    audio.currentTime = 0;
-    audio.play();
-
-    setTimeout(() => {
-      modal.style.display = "flex";
-      modalImg.src = targetItem.img;
-    }, 6000); // Scroll bitince modal göster
-  }
-
-  preloadImages(items, () => {
-    allImagesLoaded = true;
-    openButton.disabled = false;
+  fullList.forEach(item => {
+    const img = document.createElement('img');
+    img.src = item.src;
+    img.className = 'item-img';
+    scrollArea.appendChild(img);
   });
 
-  openButton.addEventListener("click", () => {
-    if (!allImagesLoaded) return;
+  const itemWidth = 110;
+  const totalWidth = itemWidth * (fullList.length - 1);
+  const centerOffset = (scrollArea.clientWidth / 2) - (itemWidth / 2);
 
-    openButton.disabled = true;
-    modal.style.display = "none";
+  audio.play();
 
-    const winner = pickWinner();
-    const scrollList = createScrollItems(winner);
+  scrollArea.style.transition = 'transform 6s cubic-bezier(0.1, 0.9, 0.4, 1)';
+  scrollArea.style.transform = `translateX(-${totalWidth - centerOffset}px)`;
 
-    // animasyon başlat
-    startScrollAnimation(scrollList, winner);
-
-    setTimeout(() => {
-      openButton.disabled = false;
-    }, 7000); // Yeni deneme için süre
-  });
-
-  // Modal kapamak için tıklama
-  modal.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
+  setTimeout(() => {
+    winnerImage.src = winner.src;
+    winnerModal.style.display = 'flex';
+  }, 6100);
 });
