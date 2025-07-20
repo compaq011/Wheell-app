@@ -1,4 +1,4 @@
-body {
+⁸body {
   background-color: #000;
   margin: 0;
   padding: 0;
@@ -99,4 +99,11 @@ button#openButton:hover {
   border-radius: 12px;
   border: 3px solid white;
   box-shadow: 0 0 20px white;
+}
+.scroll-area img {
+  width: 100px; /* ihtiyaca göre 80px, 120px gibi ayarlayabilirsin */
+  height: auto;
+  margin: 0 5px;
+  border-radius: 8px;
+  object-fit: contain; /* görüntü kırpmasını engeller */
 }
