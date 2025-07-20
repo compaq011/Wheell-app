@@ -1,6 +1,5 @@
 const scrollArea = document.getElementById("scrollArea");
 const openButton = document.getElementById("openButton");
-
 const winnerModal = document.getElementById("winnerModal");
 const winnerImage = document.getElementById("winnerImage");
 
@@ -15,13 +14,13 @@ const items = [
   "images/TickettoHell.jpg"
 ];
 
-const itemWidth = 110; // image + margin
-
+// Scroll alanına rastgele itemleri yerleştir
 function populateItems() {
   scrollArea.innerHTML = "";
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 60; i++) {
     const img = document.createElement("img");
     img.src = items[Math.floor(Math.random() * items.length)];
+    img.classList.add("item-img");
     scrollArea.appendChild(img);
   }
 }
@@ -30,38 +29,32 @@ populateItems();
 
 function spin() {
   openButton.disabled = true;
-  populateItems(); // görselleri yenile
 
+  // Scroll alanı genişliği
+  const itemWidth = 110; // CSS'e uygun
   const totalItems = scrollArea.children.length;
-  const center = scrollArea.parentElement.clientWidth / 2;
 
+  // Kazanan item pointer’ın altına gelsin (20. index civarı)
   const winningIndex = 20 + Math.floor(Math.random() * 10);
-  const targetPosition = -(winningIndex * itemWidth) + center - (itemWidth / 2);
+  const stopPosition = -(winningIndex * itemWidth);
 
-  let currentX = 0;
-  let speed = 80; // ilk hız
-  let deceleration = 0.95; // yavaşlama katsayısı
+  // Hızlı başlayıp yavaşlayan animasyon
+  scrollArea.style.transition = "transform 5s ease-out";
+  scrollArea.style.transform = `translateX(${stopPosition}px)`;
 
-  const interval = setInterval(() => {
-    speed *= deceleration;
-    currentX -= speed;
+  setTimeout(() => {
+    // Kazanan item'i belirle
+    const selectedImg = scrollArea.children[winningIndex];
+    const imgSrc = selectedImg.src;
 
-    if (currentX <= targetPosition) {
-      clearInterval(interval);
-      scrollArea.style.transform = `translateX(${targetPosition}px)`;
+    // Modal göster
+    winnerImage.src = imgSrc;
+    winnerModal.style.display = "flex";
 
-      const winner = scrollArea.children[winningIndex];
-      winnerImage.src = winner.src;
-      winnerModal.style.display = "flex";
-      openButton.disabled = false;
-    } else {
-      scrollArea.style.transform = `translateX(${currentX}px)`;
-    }
-  }, 16); // ~60 FPS
+    // Tekrar oynatmak istersen modal'ı kapat
+    openButton.disabled = false;
+  }, 5200); // Animasyon süresiyle uyumlu olmalı
 }
 
+// Butona tıklandığında çalıştır
 openButton.addEventListener("click", spin);
-
-winnerModal.addEventListener("click", () => {
-  winnerModal.style.display = "none";
-});
