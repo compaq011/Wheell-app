@@ -12,12 +12,6 @@ const rewards = [
   "Gallery case", "Kilowatt case", "Chroma 2 case", "Ticket to hell mw"
 ];
 
-app.get('/:token', (req, res) => {
-  const { token } = req.params;
-  if (!tokens[token]) {
-    return res.send("❌ Bu bağlantı geçersiz ya da zaten kullanıldı.");
-  }
-
   const reward = rewards[Math.floor(Math.random() * rewards.length)];
   tokens[token] = false;
   fs.writeFileSync(tokensFile, JSON.stringify(tokens));
