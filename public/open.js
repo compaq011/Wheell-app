@@ -5,14 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalImg = modal.querySelector("img");
 
   const items = [
-    { name: "recoil", img: "images/recoil.jpg", chance: 60 },
-    { name: "fracture", img: "images/fracture.jpg", chance: 27 },
-    { name: "revolution", img: "images/revolution.jpg", chance: 0.05 },
+    { name: "Recoil", img: "images/recoil.jpg", chance: 60 },
+    { name: "Feacture", img: "images/fracture.jpg", chance: 27 },
+    { name: "Revolution", img: "images/revolution.jpg", chance: 0.05 },
     { name: "kilowatt", img: "images/kilowatt.jpg", chance: 4 },
     { name: "tickettohell", img: "images/tickettohell.jpg", chance: 3 },
     { name: "gallery", img: "images/gallery.jpg", chance: 0.05 },
-    { name: "chroma2", img: "images/chroma2.jpg", chance: 0 },
-    { name: "vogue", img: "images/vogue.jpg", chance: 0 },
+    { name: "Chroma2", img: "images/chroma2.jpg", chance: 0 },
+    { name: "Glock18-vogue", img: "images/vogue.jpg", chance: 0 },
   ];
 
   const audio = new Audio("sounds/open.mp3");
