@@ -10,7 +10,7 @@ const items = [
   "images/Gallery.jpg",
   "images/Kilowatt.jpg",
   "images/Chroma2.jpg",
-  "images/TicketToHell.jpg"
+  "images/TickettoHell.jpg"
 ];
 
 function populateItems() {
