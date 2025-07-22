@@ -3,11 +3,11 @@ const chances = {
   Recoil: 0.60,
   Fracture: 0.27,
   Revolution: 0.0005,
-  Kilowatt: 0.04,
-  TicketToHell: 0.03,
+  kilowatt: 0.04,
+  ticketToHell: 0.03,
   Gallery: 0.0005,
   Chroma2: 0.0,
-  Glock18Vogue: 0.0
+  Glock18-vogue: 0.0
 };
 const items = Object.keys(chances);
 const scrollArea = document.getElementById("scrollArea");
