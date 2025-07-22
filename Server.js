@@ -1,25 +1,36 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const app = express();
+
 const PORT = process.env.PORT || 3000;
+const VALID_TOKENS = ["abc123", "def456"];
+const winnersFile = path.join(__dirname, "winners.json");
 
-// RAM tabanlı token listesi
-global.tokens = ['abc123', 'xyz789' , 'ykt' , 'ssd', 'ismail' , 'ssk'];
+app.use("/public", express.static(path.join(__dirname, "public")));
+app.use(express.json());
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   const token = req.query.token;
-  if (!token || !global.tokens.includes(token)) {
-    return res.status(403).send('Geçersiz veya eksik token.');
+  if (!VALID_TOKENS.includes(token)) {
+    return res.status(403).send("Geçersiz token.");
   }
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
 
-  // Token kullanıldıktan sonra silinir
-  global.tokens = global.tokens.filter(t => t !== token);
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+app.post("/api/winner", (req, res) => {
+  const { item } = req.body;
+  if (!item) return res.status(400).send("Item gerekli.");
+
+  let winners = [];
+  if (fs.existsSync(winnersFile)) {
+    winners = JSON.parse(fs.readFileSync(winnersFile));
+  }
+  winners.push({ item, timestamp: new Date().toISOString() });
+  fs.writeFileSync(winnersFile, JSON.stringify(winners, null, 2));
+  res.send({ success: true });
 });
 
 app.listen(PORT, () => {
-  console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
+  console.log(`Server çalışıyor: http://localhost:${PORT}`);
 });
