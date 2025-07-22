@@ -12,6 +12,11 @@ const items = [
   { src: "images/Chroma2.jpg", chance: 0 },
   { src: "images/Glock18-vogue.jpg", chance: 0 },
 ];
+document.addEventListener('DOMContentLoaded', () => {
+  const openButton = document.getElementById('openButton');
+  // ve diğer işlemler...
+});
+
 
 function weightedRandom() {
   const total = items.reduce((sum, i) => sum + i.chance, 0);
