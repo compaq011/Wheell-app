@@ -1,91 +1,65 @@
+// Değiştirilecek item şansı
+const chances = {
+  Recoil: 0.60,
+  Fracture: 0.27,
+  Revolution: 0.0005,
+  Kilowatt: 0.04,
+  TicketToHell: 0.03,
+  Gallery: 0.0005,
+  Chroma2: 0.0,
+  Glock18Vogue: 0.0
+};
+const items = Object.keys(chances);
 const scrollArea = document.getElementById("scrollArea");
 const openButton = document.getElementById("openButton");
-const rollSound = new Audio("sounds/roll.mp3");
+const rollSound = document.getElementById("rollSound");
+const winnerModal = document.getElementById("winnerModal");
+const winnerImage = document.getElementById("winnerImage");
 
-const items = [
-  { src: "images/Recoil.jpg", chance: 60 },
-  { src: "images/Fracture.jpg", chance: 27 },
-  { src: "images/Revolution.jpg", chance: 0.05 },
-  { src: "images/kilowatt.jpg", chance: 4 },
-  { src: "images/tickettohell.jpg", chance: 3 },
-  { src: "images/gallery.jpg", chance: 0.05 },
-  { src: "images/Chroma2.jpg", chance: 0 },
-  { src: "images/Glock18-vogue.jpg", chance: 0 },
-];
-document.addEventListener('DOMContentLoaded', () => {
-  const openButton = document.getElementById('openButton');
-  // ve diğer işlemler...
-});
-
-
-function weightedRandom() {
-  const total = items.reduce((sum, i) => sum + i.chance, 0);
-  let rand = Math.random() * total;
+function getRandomItem() {
+  const rnd = Math.random();
+  let cum = 0;
   for (const item of items) {
-    if (rand < item.chance) return item;
-    rand -= item.chance;
+    cum += chances[item];
+    if (rnd < cum) return item;
   }
-  return items[0];
-}
-
-function preloadImages(callback) {
-  let loaded = 0;
-  const total = items.length;
-  items.forEach(item => {
-    const img = new Image();
-    img.src = item.src;
-    img.onload = () => {
-      loaded++;
-      if (loaded === total) callback();
-    };
-  });
+  return items[items.length - 1];
 }
 
 function populateItems() {
   scrollArea.innerHTML = "";
-  for (let i = 0; i < 60; i++) {
-    const item = weightedRandom();
+  for (let i = 0; i < 40; i++) {
+    const name = items[Math.floor(Math.random() * items.length)];
     const img = document.createElement("img");
-    img.src = item.src;
-    img.className = "item-img";
+    img.src = `images/${name}.jpg`;
+    img.alt = name;
     scrollArea.appendChild(img);
   }
 }
 
 function spin() {
   openButton.disabled = true;
-  rollSound.currentTime = 0;
+  const winner = getRandomItem();
+  const targetIndex = 20;
+  const stopAt = -(targetIndex * 110); // 110px item genişliği+margin
+  scrollArea.style.transition = "transform 4s ease-out";
   rollSound.play();
-
-  const itemWidth = 110; // padding dahil
-  const stopIndex = 30 + Math.floor(Math.random() * 5);
-  const stopOffset = -itemWidth * stopIndex + scrollArea.clientWidth / 2 - itemWidth / 2;
-
-  scrollArea.style.transition = "transform 6s cubic-bezier(0.1, 0.1, 0, 1)";
-  scrollArea.style.transform = `translateX(${stopOffset}px)`;
+  scrollArea.style.transform = `translateX(${stopAt}px)`;
 
   setTimeout(() => {
     rollSound.pause();
-    const selectedImg = scrollArea.children[stopIndex];
-    const src = selectedImg?.src.split("/").pop().replace(".jpg", "");
-    alert("Kazandığın item: " + src);
-
-    fetch("/winner", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item: src, time: new Date().toISOString() })
+    winnerImage.src = `images/${winner}.jpg`;
+    winnerModal.style.display = "flex";
+    // Sunucuya POST olarak gönder
+    fetch('/winner?token=abc123', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item: winner, date: Date.now() })
     });
-
-    openButton.disabled = false;
-  }, 6200);
+  }, 4000);
 }
 
-preloadImages(() => {
+document.addEventListener("DOMContentLoaded", () => {
   populateItems();
-  openButton.disabled = false;
-});
-
-openButton.addEventListener("click", () => {
-  populateItems();
-  spin();
+  openButton.addEventListener("click", spin);
 });
