@@ -54,7 +54,7 @@ openButton.addEventListener("click", () => {
   const scrollDistance = index * 110 + 55 - (600 / 2); // itemWidth: 110px, container: 600px
 
   // Ses oynat
-  const audio = new Audio("/sounds/open.mp3");
+  const audio = new Audio("/sounds/roll.mp3");
   audio.play();
 
   // Scroll animasyonu
