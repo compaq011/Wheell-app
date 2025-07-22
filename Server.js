@@ -1,36 +1,42 @@
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const app = express();
-
 const PORT = process.env.PORT || 3000;
-const VALID_TOKENS = ["abc123", "def456", "ykt", "tky"];
-const winnersFile = path.join(__dirname, "winners.json");
 
-app.use("/public", express.static(path.join(__dirname, "public")));
+// Geçerli tokenlar
+const validTokens = ['abc123'];
+
 app.use(express.json());
 
-app.get("/", (req, res) => {
+// Token kontrolü
+app.use((req, res, next) => {
   const token = req.query.token;
-  if (!VALID_TOKENS.includes(token)) {
-    return res.status(403).send("Geçersiz token.");
+  if (!token || !validTokens.includes(token)) {
+    return res.status(403).send('Geçersiz veya eksik token.');
   }
-  res.sendFile(path.join(__dirname, "public/index.html"));
+  next();
 });
 
-app.post("/api/winner", (req, res) => {
-  const { item } = req.body;
-  if (!item) return res.status(400).send("Item gerekli.");
+// Static dosyaları sun (public klasöründen)
+app.use(express.static(path.join(__dirname, 'public')));
 
-  let winners = [];
-  if (fs.existsSync(winnersFile)) {
-    winners = JSON.parse(fs.readFileSync(winnersFile));
-  }
-  winners.push({ item, timestamp: new Date().toISOString() });
-  fs.writeFileSync(winnersFile, JSON.stringify(winners, null, 2));
-  res.send({ success: true });
+// Kazananı JSON dosyasına yazma
+app.post('/winner', (req, res) => {
+  const winnerData = req.body;
+  const filePath = path.join(__dirname, 'winners.json');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    let winners = [];
+    if (!err && data) {
+      winners = JSON.parse(data);
+    }
+    winners.push(winnerData);
+    fs.writeFile(filePath, JSON.stringify(winners, null, 2), () => {
+      res.status(200).send({ message: 'Kazanan kaydedildi.' });
+    });
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server çalışıyor: http://localhost:${PORT}`);
+  console.log(`Sunucu ${PORT} portunda çalışıyor`);
 });
