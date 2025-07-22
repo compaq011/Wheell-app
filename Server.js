@@ -4,12 +4,10 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Geçerli tokenlar
-const validTokens = ['abc123'];
+const validTokens = ['abc123']; // Güncel tokenlarini buraya ekle
 
 app.use(express.json());
 
-// Token kontrolü
 app.use((req, res, next) => {
   const token = req.query.token;
   if (!token || !validTokens.includes(token)) {
@@ -18,18 +16,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Static dosyaları sun (public klasöründen)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Kazananı JSON dosyasına yazma
 app.post('/winner', (req, res) => {
   const winnerData = req.body;
   const filePath = path.join(__dirname, 'winners.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
     let winners = [];
-    if (!err && data) {
-      winners = JSON.parse(data);
-    }
+    if (!err && data) winners = JSON.parse(data);
     winners.push(winnerData);
     fs.writeFile(filePath, JSON.stringify(winners, null, 2), () => {
       res.status(200).send({ message: 'Kazanan kaydedildi.' });
@@ -37,6 +31,4 @@ app.post('/winner', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Sunucu ${PORT} portunda çalışıyor`);
-});
+app.listen(PORT, () => console.log(`Sunucu ${PORT} portunda çalışıyor...`));
