@@ -4,7 +4,7 @@ const fs = require("fs");
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const VALID_TOKENS = ["abc123", "def456"];
+const VALID_TOKENS = ["abc123", "def456", "ykt", "tky"];
 const winnersFile = path.join(__dirname, "winners.json");
 
 app.use("/public", express.static(path.join(__dirname, "public")));
