@@ -1,61 +1,76 @@
+const scrollArea = document.getElementById("scrollArea");
+const openButton = document.getElementById("openButton");
+const winnerModal = document.getElementById("winnerModal");
+const winnerImage = document.getElementById("winnerImage");
+const rollSound = document.getElementById("rollSound");
+
 const items = [
-  { name: 'Recoil', src: '/public/images/Recoil.jpg', chance: 60 },
-  { name: 'Fracture', src: '/public/images/Fracture.jpg', chance: 27 },
-  { name: 'tickettohell', src: '/public/images/tickettohell.jpg', chance: 3 },
-  { name: 'kilowatt', src: '/public/images/kilowatt.jpg', chance: 4 },
-  { name: 'gallery', src: '/public/images/gallery.jpg', chance: 0.05 },
-  { name: 'Revolution', src: '/public/images/Revolution.jpg', chance: 0.05 },
-  { name: 'Chroma2', src: '/public/images/Chroma2.jpg', chance: 0 },
-  { name: 'Glock18-vogue', src: '/public/images/Glock18-vogue.jpg', chance: 0 }
+  { src: "public/images/Recoil.jpg", chance: 60 },
+  { src: "public/images/Fracture.jpg", chance: 27 },
+  { src: "public/images/Revolution.jpg", chance: 0.05 },
+  { src: "public/images/Kilowatt.jpg", chance: 4 },
+  { src: "public/images/tickettohell.jpg", chance: 3 },
+  { src: "public/images/gallery.jpg", chance: 0.05 },
+  { src: "public/images/Chroma2.jpg", chance: 0 },
+  { src: "public/images/Glock18-vogue.jpg", chance: 0 }
 ];
 
-function pickWinner() {
+function getRandomItem() {
   const total = items.reduce((sum, item) => sum + item.chance, 0);
   const rand = Math.random() * total;
-  let cumulative = 0;
+  let cum = 0;
   for (const item of items) {
-    cumulative += item.chance;
-    if (rand < cumulative) return item;
+    cum += item.chance;
+    if (rand <= cum) return item.src;
   }
-  return items[0];
+  return items[0].src;
 }
 
-document.getElementById('openButton').addEventListener('click', () => {
-  const scrollArea = document.getElementById('scrollArea');
-  const winnerModal = document.getElementById('winnerModal');
-  const winnerImage = document.getElementById('winnerImage');
-  const audio = document.getElementById('openSound');
-
-  scrollArea.innerHTML = '';
-  winnerModal.style.display = 'none';
-
-  const winner = pickWinner();
-  const fullList = [];
-
-  for (let i = 0; i < 30; i++) {
-    const item = items[Math.floor(Math.random() * items.length)];
-    fullList.push(item);
-  }
-  fullList.push(winner);
-
-  fullList.forEach(item => {
-    const img = document.createElement('img');
-    img.src = item.src;
-    img.className = 'item-img';
+function populateItems(winningSrc) {
+  scrollArea.innerHTML = "";
+  const preItems = 20;
+  for (let i = 0; i < preItems; i++) {
+    const img = document.createElement("img");
+    img.src = items[Math.floor(Math.random() * items.length)].src;
     scrollArea.appendChild(img);
-  });
+  }
+  const winImg = document.createElement("img");
+  winImg.src = winningSrc;
+  scrollArea.appendChild(winImg);
+  for (let i = 0; i < 20; i++) {
+    const img = document.createElement("img");
+    img.src = items[Math.floor(Math.random() * items.length)].src;
+    scrollArea.appendChild(img);
+  }
+}
+
+function spin() {
+  openButton.disabled = true;
+  const winningSrc = getRandomItem();
+  populateItems(winningSrc);
+  rollSound.currentTime = 0;
+  rollSound.play();
 
   const itemWidth = 110;
-  const totalWidth = itemWidth * (fullList.length - 1);
-  const centerOffset = (scrollArea.clientWidth / 2) - (itemWidth / 2);
-
-  audio.play();
-
-  scrollArea.style.transition = 'transform 6s cubic-bezier(0.1, 0.9, 0.4, 1)';
-  scrollArea.style.transform = `translateX(-${totalWidth - centerOffset}px)`;
+  const targetIndex = 20;
+  const stopAt = -(itemWidth * targetIndex);
+  scrollArea.style.transition = "transform 6s ease-out";
+  scrollArea.style.transform = `translateX(${stopAt}px)`;
 
   setTimeout(() => {
-    winnerImage.src = winner.src;
-    winnerModal.style.display = 'flex';
-  }, 6100);
-});
+    rollSound.pause();
+    winnerImage.src = winningSrc;
+    winnerModal.style.display = "flex";
+    fetch("/api/winner", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item: winningSrc.split("/").pop() }),
+    });
+    setTimeout(() => {
+      winnerModal.style.display = "none";
+      openButton.disabled = false;
+    }, 3000);
+  }, 6200);
+}
+
+openButton.addEventListener("click", spin);
