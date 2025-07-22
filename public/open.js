@@ -1,82 +1,86 @@
-const items = [
-  "Fracture.jpg",
-  "Revolution.jpg",
-  "tickettohell.jpg",
-  "Glock18-vogue.jpg",
-  "Recoil.jpg",
-  "Chroma2.jpg",
-  "kilowatt.jpg",
-  "gallery.jpg"
-];
-
-const probabilities = [
-  27, 0.05, 3, 0, 60, 0, 4, 0.05
-];
-
-const scrollArea = document.querySelector(".scroll-area");
+const scrollArea = document.getElementById("scrollArea");
 const openButton = document.getElementById("openButton");
-const winnerImage = document.getElementById("winner-image");
-const winnerContainer = document.getElementById("winner-container");
+const rollSound = new Audio("sounds/roll.mp3");
 
-let imagesLoaded = 0;
+const items = [
+  { src: "images/Recoil.jpg", chance: 60 },
+  { src: "images/Fracture.jpg", chance: 27 },
+  { src: "images/Revolution.jpg", chance: 0.05 },
+  { src: "images/kilowatt.jpg", chance: 4 },
+  { src: "images/tickettohell.jpg", chance: 3 },
+  { src: "images/gallery.jpg", chance: 0.05 },
+  { src: "images/Chroma2.jpg", chance: 0 },
+  { src: "images/Glock18-vogue.jpg", chance: 0 },
+];
 
-// Görselleri yükle
-items.forEach(src => {
-  const img = document.createElement("img");
-  img.src = `/images/${src}`;
-  img.className = "item-img";
-  img.onload = () => {
-    imagesLoaded++;
-    if (imagesLoaded === items.length) {
-      openButton.disabled = false;
-    }
-  };
-  scrollArea.appendChild(img);
-});
-
-function getRandomItem() {
-  const total = probabilities.reduce((a, b) => a + b, 0);
-  const rand = Math.random() * total;
-  let cumulative = 0;
-  for (let i = 0; i < items.length; i++) {
-    cumulative += probabilities[i];
-    if (rand <= cumulative) return items[i];
+function weightedRandom() {
+  const total = items.reduce((sum, i) => sum + i.chance, 0);
+  let rand = Math.random() * total;
+  for (const item of items) {
+    if (rand < item.chance) return item;
+    rand -= item.chance;
   }
-  return items[items.length - 1];
+  return items[0];
 }
 
-openButton.addEventListener("click", () => {
+function preloadImages(callback) {
+  let loaded = 0;
+  const total = items.length;
+  items.forEach(item => {
+    const img = new Image();
+    img.src = item.src;
+    img.onload = () => {
+      loaded++;
+      if (loaded === total) callback();
+    };
+  });
+}
+
+function populateItems() {
+  scrollArea.innerHTML = "";
+  for (let i = 0; i < 60; i++) {
+    const item = weightedRandom();
+    const img = document.createElement("img");
+    img.src = item.src;
+    img.className = "item-img";
+    scrollArea.appendChild(img);
+  }
+}
+
+function spin() {
   openButton.disabled = true;
-  winnerContainer.style.display = "none";
+  rollSound.currentTime = 0;
+  rollSound.play();
 
-  const selectedItem = getRandomItem();
-  const index = items.indexOf(selectedItem);
-  const scrollDistance = index * 110 + 55 - (600 / 2); // itemWidth: 110px, container: 600px
+  const itemWidth = 110; // padding dahil
+  const stopIndex = 30 + Math.floor(Math.random() * 5);
+  const stopOffset = -itemWidth * stopIndex + scrollArea.clientWidth / 2 - itemWidth / 2;
 
-  // Ses oynat
-  const audio = new Audio("/sounds/roll.mp3");
-  audio.play();
-
-  // Scroll animasyonu
-  scrollArea.style.transition = "none";
-  scrollArea.style.transform = "translateX(0)";
-  void scrollArea.offsetWidth;
-
-  // Sonra yavaşlatmalı hareket
-  scrollArea.style.transition = "transform 5s ease-out";
-  scrollArea.style.transform = `translateX(-${scrollDistance}px)`;
+  scrollArea.style.transition = "transform 6s cubic-bezier(0.1, 0.1, 0, 1)";
+  scrollArea.style.transform = `translateX(${stopOffset}px)`;
 
   setTimeout(() => {
-    winnerImage.src = `/images/${selectedItem}`;
-    winnerContainer.style.display = "flex";
+    rollSound.pause();
+    const selectedImg = scrollArea.children[stopIndex];
+    const src = selectedImg?.src.split("/").pop().replace(".jpg", "");
+    alert("Kazandığın item: " + src);
 
-    // Kazananı sunucuya gönder
-    fetch("/api/winner", {
+    fetch("/winner", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item: selectedItem })
+      body: JSON.stringify({ item: src, time: new Date().toISOString() })
     });
 
     openButton.disabled = false;
-  }, 5500);
+  }, 6200);
+}
+
+preloadImages(() => {
+  populateItems();
+  openButton.disabled = false;
+});
+
+openButton.addEventListener("click", () => {
+  populateItems();
+  spin();
 });
