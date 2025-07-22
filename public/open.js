@@ -1,76 +1,82 @@
-const scrollArea = document.getElementById("scrollArea");
-const openButton = document.getElementById("openButton");
-const winnerModal = document.getElementById("winnerModal");
-const winnerImage = document.getElementById("winnerImage");
-const rollSound = document.getElementById("rollSound");
-
 const items = [
-  { src: "public/images/Recoil.jpg", chance: 60 },
-  { src: "public/images/Fracture.jpg", chance: 27 },
-  { src: "public/images/Revolution.jpg", chance: 0.05 },
-  { src: "public/images/Kilowatt.jpg", chance: 4 },
-  { src: "public/images/tickettohell.jpg", chance: 3 },
-  { src: "public/images/gallery.jpg", chance: 0.05 },
-  { src: "public/images/Chroma2.jpg", chance: 0 },
-  { src: "public/images/Glock18-vogue.jpg", chance: 0 }
+  "Fracture.jpg",
+  "Revolution.jpg",
+  "tickettohell.jpg",
+  "Glock18-vogue.jpg",
+  "Recoil.jpg",
+  "Chroma2.jpg",
+  "kilowatt.jpg",
+  "gallery.jpg"
 ];
 
+const probabilities = [
+  27, 0.05, 3, 0, 60, 0, 4, 0.05
+];
+
+const scrollArea = document.querySelector(".scroll-area");
+const openButton = document.getElementById("openButton");
+const winnerImage = document.getElementById("winner-image");
+const winnerContainer = document.getElementById("winner-container");
+
+let imagesLoaded = 0;
+
+// Görselleri yükle
+items.forEach(src => {
+  const img = document.createElement("img");
+  img.src = `/images/${src}`;
+  img.className = "item-img";
+  img.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === items.length) {
+      openButton.disabled = false;
+    }
+  };
+  scrollArea.appendChild(img);
+});
+
 function getRandomItem() {
-  const total = items.reduce((sum, item) => sum + item.chance, 0);
+  const total = probabilities.reduce((a, b) => a + b, 0);
   const rand = Math.random() * total;
-  let cum = 0;
-  for (const item of items) {
-    cum += item.chance;
-    if (rand <= cum) return item.src;
+  let cumulative = 0;
+  for (let i = 0; i < items.length; i++) {
+    cumulative += probabilities[i];
+    if (rand <= cumulative) return items[i];
   }
-  return items[0].src;
+  return items[items.length - 1];
 }
 
-function populateItems(winningSrc) {
-  scrollArea.innerHTML = "";
-  const preItems = 20;
-  for (let i = 0; i < preItems; i++) {
-    const img = document.createElement("img");
-    img.src = items[Math.floor(Math.random() * items.length)].src;
-    scrollArea.appendChild(img);
-  }
-  const winImg = document.createElement("img");
-  winImg.src = winningSrc;
-  scrollArea.appendChild(winImg);
-  for (let i = 0; i < 20; i++) {
-    const img = document.createElement("img");
-    img.src = items[Math.floor(Math.random() * items.length)].src;
-    scrollArea.appendChild(img);
-  }
-}
-
-function spin() {
+openButton.addEventListener("click", () => {
   openButton.disabled = true;
-  const winningSrc = getRandomItem();
-  populateItems(winningSrc);
-  rollSound.currentTime = 0;
-  rollSound.play();
+  winnerContainer.style.display = "none";
 
-  const itemWidth = 110;
-  const targetIndex = 20;
-  const stopAt = -(itemWidth * targetIndex);
-  scrollArea.style.transition = "transform 6s ease-out";
-  scrollArea.style.transform = `translateX(${stopAt}px)`;
+  const selectedItem = getRandomItem();
+  const index = items.indexOf(selectedItem);
+  const scrollDistance = index * 110 + 55 - (600 / 2); // itemWidth: 110px, container: 600px
+
+  // Ses oynat
+  const audio = new Audio("/sounds/open.mp3");
+  audio.play();
+
+  // Scroll animasyonu
+  scrollArea.style.transition = "none";
+  scrollArea.style.transform = "translateX(0)";
+  void scrollArea.offsetWidth;
+
+  // Sonra yavaşlatmalı hareket
+  scrollArea.style.transition = "transform 5s ease-out";
+  scrollArea.style.transform = `translateX(-${scrollDistance}px)`;
 
   setTimeout(() => {
-    rollSound.pause();
-    winnerImage.src = winningSrc;
-    winnerModal.style.display = "flex";
+    winnerImage.src = `/images/${selectedItem}`;
+    winnerContainer.style.display = "flex";
+
+    // Kazananı sunucuya gönder
     fetch("/api/winner", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item: winningSrc.split("/").pop() }),
+      body: JSON.stringify({ item: selectedItem })
     });
-    setTimeout(() => {
-      winnerModal.style.display = "none";
-      openButton.disabled = false;
-    }, 3000);
-  }, 6200);
-}
 
-openButton.addEventListener("click", spin);
+    openButton.disabled = false;
+  }, 5500);
+});
